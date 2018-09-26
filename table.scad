@@ -46,17 +46,17 @@ module plate(metal_thickness=(0.25*mm_per_inch),
     squares = [ for (angle = [0, 240, 120]) rotate_vectors_2d(angle, one_side_square) ];
     
     // set up list of hole points
+    spac = nub_len / (n_holes + 1);
+    one_side_holepoints = [ for(x = [1:n_holes]) [(nub_width / 2) * tan(30) + spac * x, 0]];
+    
+    // assemble polygon and holes together
     color([0.6, 0.6, 0.6])
     linear_extrude(height=metal_thickness)
     difference() {
         polygon(cat(cat(squares[0], squares[1]), squares[2]));
-        /*polygon([[0, nub_width / 2], [nub_len, nub_width / 2], [nub_len, -nub_width / 2], [0, -nub_width / 2],
-                 [-nub_len * cos(60), -(nub_len / 2) - nub_len*sin(60)],
-                 [-nub_len * cos(60) - nub_width * cos(30), -(nub_len / 2) - nub_len*sin(60) + nub_width * sin(30)],
-                 [-cos(30) * nub_width, 0],
-                 [-(nub_len * sin(30)) - nub_width * cos(30), nub_len * cos(30) + nub_width / 2 - nub_width * sin(30)],
-                 [-(nub_len * sin(30)), nub_len * cos(30) + nub_width / 2]]);*/
-        
+        for (angle = [0, 240, 120])
+            for (xoffset = one_side_holepoints)
+                rotate(angle) translate(xoffset) circle(d=hole_diameter, $fn=100);
     }
 }
 plate();
